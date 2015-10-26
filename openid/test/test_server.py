@@ -40,7 +40,7 @@ class TestProtocolError(unittest.TestCase):
 
         rt_base, result_args = e.encodeToURL().split('?', 1)
         result_args = cgi.parse_qs(result_args)
-        self.failUnlessEqual(result_args, expected_args)
+        self.assertEqual(result_args, expected_args)
 
     def test_browserWithReturnTo_OpenID2_GET(self):
         return_to = "http://rp.unittest/consumer"
@@ -62,7 +62,7 @@ class TestProtocolError(unittest.TestCase):
 
         rt_base, result_args = e.encodeToURL().split('?', 1)
         result_args = cgi.parse_qs(result_args)
-        self.failUnlessEqual(result_args, expected_args)
+        self.assertEqual(result_args, expected_args)
 
     def test_browserWithReturnTo_OpenID2_POST(self):
         return_to = "http://rp.unittest/consumer" + ('x' * OPENID1_URL_LIMIT)
@@ -75,16 +75,17 @@ class TestProtocolError(unittest.TestCase):
             'openid.return_to': return_to,
             })
         e = server.ProtocolError(args, "plucky")
-        self.failUnless(e.hasReturnTo())
+        self.assertTrue(e.hasReturnTo())
         expected_args = {
             'openid.ns': [OPENID2_NS],
             'openid.mode': ['error'],
             'openid.error': ['plucky'],
             }
 
-        self.failUnless(e.whichEncoding() == server.ENCODE_HTML_FORM)
-        self.failUnless(e.toFormMarkup() == e.toMessage().toFormMarkup(
-            args.getArg(OPENID_NS, 'return_to')))
+        self.assertEqual(e.whichEncoding(), server.ENCODE_HTML_FORM)
+        self.assertEqual(
+            e.toFormMarkup(),
+            e.toMessage().toFormMarkup(args.getArg(OPENID_NS, 'return_to')))
 
     def test_browserWithReturnTo_OpenID1_exceeds_limit(self):
         return_to = "http://rp.unittest/consumer" + ('x' * OPENID1_URL_LIMIT)
@@ -101,7 +102,7 @@ class TestProtocolError(unittest.TestCase):
             'openid.error': ['plucky'],
             }
 
-        self.failUnless(e.whichEncoding() == server.ENCODE_URL)
+        self.assertEqual(e.whichEncoding(), server.ENCODE_URL)
 
         rt_base, result_args = e.encodeToURL().split('?', 1)
         result_args = cgi.parse_qs(result_args)
