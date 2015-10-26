@@ -9,7 +9,7 @@ __all__ = ['log', 'appendArgs', 'toBase64', 'fromBase64', 'autoSubmitHTML']
 
 import binascii
 import sys
-import urlparse
+import logging
 
 from urllib import urlencode
 
@@ -19,7 +19,8 @@ elementtree_modules = [
     'xml.etree.ElementTree',
     'cElementTree',
     'elementtree.ElementTree',
-    ]
+]
+
 
 def autoSubmitHTML(form, title='OpenID transaction in progress'):
     return """
@@ -38,6 +39,7 @@ for (var i = 0; i < elements.length; i++) {
 </body>
 </html>
 """ % (title, form)
+
 
 def importElementTree(module_names=None):
     """Find a working ElementTree implementation, trying the standard
@@ -76,6 +78,7 @@ def importElementTree(module_names=None):
                           'Tried importing %r' % (module_names,)
                           )
 
+
 def log(message, level=0):
     """Handle a log message from the OpenID library.
 
@@ -105,9 +108,8 @@ def log(message, level=0):
 
     @returns: Nothing.
     """
+    logging.warning(message)
 
-    sys.stderr.write(message)
-    sys.stderr.write('\n')
 
 def appendArgs(url, args):
     """Append query arguments to a HTTP(s) URL. If the URL already has
@@ -157,9 +159,11 @@ def appendArgs(url, args):
 
     return '%s%s%s' % (url, sep, urlencode(args))
 
+
 def toBase64(s):
     """Represent string s as base64, omitting newlines"""
     return binascii.b2a_base64(s)[:-1]
+
 
 def fromBase64(s):
     try:
@@ -167,6 +171,7 @@ def fromBase64(s):
     except binascii.Error, why:
         # Convert to a common exception type
         raise ValueError(why[0])
+
 
 class Symbol(object):
     """This class implements an object that compares equal to others
@@ -185,6 +190,6 @@ class Symbol(object):
 
     def __hash__(self):
         return hash((self.__class__, self.name))
-   
+
     def __repr__(self):
         return '<Symbol %s>' % (self.name,)
